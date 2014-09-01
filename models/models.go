@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"github.com/go-xorm/xorm"
@@ -36,7 +36,7 @@ type Material_Inventory struct {
 
 var X *xorm.Engine
 
-func initDb() {
+func InitDb() {
 	const conStr = "driver={sql server};server=127.0.0.1;prot=1433;uid=sa;pwd=tlys.oaxmz.5860247;database=Data_Center"
 	var err error
 	X, err = xorm.NewEngine("odbc", conStr)
@@ -62,6 +62,19 @@ func GetAllInventory() []*Inventory {
 	return inventories
 }
 
-func GetInventory() *Inventory {
+func GetInventory(code string) (*Inventory, error) {
+	inventory := &Inventory{Inventory_code: code}
+	has, err := X.Get(inventory)
+	if err != nil {
+		return nil, err
+	}
+	if has == false {
+		return nil, nil
+	}
+	return inventory, nil
+}
 
+func AddMaterial_Inventory(meterial_inv Material_Inventory) (int64, error) {
+	affected, err := X.Insert(meterial_inv)
+	return affected, err
 }

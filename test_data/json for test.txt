@@ -1,0 +1,11 @@
+{
+"item_code":"test_item_code",
+"inventory_code":"test_inv_code",
+"create_time":"2014-09-01T16:14:41+08:00",
+"create_user_id":"test_user_id",
+"create_user_name":"test_user_name",
+"update_time":"2014-09-01T16:14:41+08:00",
+"update_user_id":"test_user_id",
+"update_user_name":"test_user_name",
+"is_available":true
+}
