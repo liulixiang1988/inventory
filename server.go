@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/go-martini/martini"
 	"github.com/liulixiang1988/inventory/models"
+	"github.com/martini-contrib/auth"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/render"
+	"log"
 	"net/http"
 )
 
@@ -16,6 +18,7 @@ func main() {
 	m := martini.Classic()
 
 	m.Use(render.Renderer())
+	m.Use(auth.BasicFunc(ValidateUser))
 
 	m.Get("/inventories", AllInventories)
 	m.Get("/inventories/:code", GetInventory)
@@ -25,7 +28,21 @@ func main() {
 	http.Handle("/", m)
 	//m.Run()
 	//修改端口
-	http.ListenAndServe(":8080", m)
+	if err := http.ListenAndServeTLS(":8080", "cert.pem", "key.pem", m); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func ValidateUser(username, password string) bool {
+	user, err := models.GetUser(username)
+	if err != nil {
+		log.Println("用户登录出错", err)
+		return false
+	}
+	if user == nil {
+		return false
+	}
+	return auth.SecureCompare(username, user.User_id) && auth.SecureCompare(password, user.Password)
 }
 
 func AllInventories(r render.Render) {
